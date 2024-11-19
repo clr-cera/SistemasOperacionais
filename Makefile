@@ -1,3 +1,5 @@
+all: client server
+	echo 'Compiled!'
 client:
 	g++ -c ./src/client.cpp
 	g++ *.o -o client
