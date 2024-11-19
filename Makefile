@@ -10,5 +10,8 @@ server:
 	g++ *.o -o server
 	rm *.o
 
+clean:
+	rm *.o *.zip
+
 zip:
 	zip -R trabalhoSO.zip . '*.c' '*.cpp' '*.h' 'Makefile'
