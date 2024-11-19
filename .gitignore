@@ -32,4 +32,5 @@
 *.app
 
 # Development
+.idea
 *.zip
