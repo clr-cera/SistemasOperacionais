@@ -34,3 +34,5 @@
 # Development
 .idea
 *.zip
+server
+client
