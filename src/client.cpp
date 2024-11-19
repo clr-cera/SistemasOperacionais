@@ -1,7 +1,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
+
+#include <thread>
 
 #include "./lib/lib.h"
 
@@ -15,7 +18,7 @@ public:
         sockaddr_in serverAddress;
         serverAddress.sin_family = AF_INET;
         serverAddress.sin_port = htons(port);
-        serverAddress.sin_addr.s_addr = INADDR_ANY;
+        serverAddress.sin_addr.s_addr = IP;
 
         if(connect(clientSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress))) {
             std::cerr << "Failed to connect to server" << std::endl;
@@ -24,8 +27,30 @@ public:
 
         std::cout << "Connected to Server!" << std::endl;
     }
+
+    [[noreturn]] void send_loop() {
+        while(true) {
+            char buffer[1024];
+            std::cin >> buffer;
+            send(clientSocket, buffer, strlen(buffer), 0);
+        }
+    }
+
+    [[noreturn]] void receive_loop() {
+        while(true) {
+            char buffer[1024];
+            recv(clientSocket, buffer, 1024, 0);
+            std::cout << buffer << std::endl;
+        }
+    }
 };
 
 int main() {
-    const Client client = Client(PORT);
+    Client client = Client(PORT);
+
+    std::thread sendThread(&Client::send_loop, &client);
+    std::thread receiveThread(&Client::receive_loop, &client);
+
+    sendThread.join();
+    receiveThread.join();
 }

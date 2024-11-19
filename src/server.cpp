@@ -3,11 +3,15 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include <thread>
 
 #include "lib/lib.h"
 
 class Server {
 public:
+
+  // O vetor connections é uma zona crítica,
+  // pois são escritas novas conexões e lidas novas mensagem ao mesmo tempo
   std::vector<int> connections;
   int serverSocket;
 
@@ -17,7 +21,7 @@ public:
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(port);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_addr.s_addr = IP;
 
     if (bind(serverSocket, (struct sockaddr*) &serverAddress, sizeof(serverAddress))) {
       std::cerr << "Failed to bind to port " << port << std::endl;
@@ -38,9 +42,27 @@ public:
   }
 
 
+  // Thread que aceita novas conexões e escreve em connections
   [[noreturn]] void accept_loop() {
     while(true) {
       accept_connection();
+    }
+  }
+
+  [[noreturn]] void receive_loop() {
+    while(true) {
+      for(auto c : connections) {
+        char buffer[1024];
+        if (recv(c, buffer, 1024, 0) != 0) {
+          std::cout << buffer << std::endl;
+          for(auto co : connections) {
+            if(c != co) {
+              send(co, buffer, 1024, 0);
+            }
+          }
+        }
+
+      }
     }
   }
 
@@ -48,5 +70,12 @@ public:
 
 int main(){
   Server server = Server(PORT);
-  server.accept_loop();
+
+  std::thread accepterThread(&Server::accept_loop, &server);
+  std::thread receiverThread(&Server::receive_loop, &server);
+
+  accepterThread.join();
+  receiverThread.join();
+
+  return 0;
 }
