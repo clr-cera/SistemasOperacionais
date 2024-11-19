@@ -4,6 +4,9 @@ all: client server
 run_server: server
 	./server
 
+run_server_nohup: server
+	nohup ./server &
+
 run_client: client
 	./client
 
