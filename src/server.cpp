@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <thread>
-
+#include <fcntl.h>
 #include "lib/lib.h"
 
 class Server {
@@ -16,10 +16,10 @@ public:
   int serverSocket;
 
   explicit Server(const int port) {
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    serverSocket = socket(AF_INET, SOCK_STREAM, 0); // SOCK_STREAM makes it TCP
 
     sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_family = AF_INET; // IPV4
     serverAddress.sin_port = htons(port);
     serverAddress.sin_addr.s_addr = IP;
 
@@ -49,6 +49,7 @@ public:
     }
   }
 
+  // Thread que lê mensagens e as reenvia
   [[noreturn]] void receive_loop() {
     while(true) {
       for(auto c : connections) {

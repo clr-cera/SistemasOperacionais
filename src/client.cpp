@@ -13,10 +13,10 @@ public:
     int clientSocket;
 
     explicit Client(const int port) {
-        clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        clientSocket = socket(AF_INET, SOCK_STREAM, 0); // Makes it TCP
 
         sockaddr_in serverAddress;
-        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_family = AF_INET; // TCP
         serverAddress.sin_port = htons(port);
         serverAddress.sin_addr.s_addr = IP;
 
@@ -28,6 +28,7 @@ public:
         std::cout << "Connected to Server!" << std::endl;
     }
 
+    // Thread que lê do usuário e envia mensagens
     [[noreturn]] void send_loop() {
         while(true) {
             char buffer[1024];
@@ -36,6 +37,7 @@ public:
         }
     }
 
+    // Thread que lê mensagens e printa
     [[noreturn]] void receive_loop() {
         while(true) {
             char buffer[1024];
