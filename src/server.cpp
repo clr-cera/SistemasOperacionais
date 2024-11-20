@@ -56,8 +56,8 @@ public:
 
   // Thread que lê mensagens e as reenvia
   [[noreturn]] void receive_loop() {
-    mutex_connections.lock();
     while(true) {
+      mutex_connections.lock();
       for(auto c : connections) {
         char buffer[1024];
         if (recv(c, buffer, 1024, 0) != 0) {
@@ -70,8 +70,8 @@ public:
         }
 
       }
+      mutex_connections.unlock();
     }
-    mutex_connections.unlock();
   }
 
 };
