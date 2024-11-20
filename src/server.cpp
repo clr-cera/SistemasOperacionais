@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <thread>
-#include <fcntl.h>
+#include <mutex>
 #include "lib/lib.h"
 
 class Server {
@@ -13,6 +13,8 @@ public:
   // O vetor connections é uma zona crítica,
   // pois são escritas novas conexões e lidas novas mensagem ao mesmo tempo
   std::vector<int> connections;
+  std::mutex mutex_connections;
+
   int serverSocket;
 
   explicit Server(const int port) {
@@ -35,7 +37,10 @@ public:
 
   void accept_connection() {
     int clientSocket = accept(serverSocket, nullptr, nullptr);
+
+    mutex_connections.lock();
     connections.push_back(clientSocket);
+    mutex_connections.unlock();
 
     std::cout << "New connection." << std::endl;
     std::cout << "Connection number: " << connections.size() << std::endl;
@@ -51,6 +56,7 @@ public:
 
   // Thread que lê mensagens e as reenvia
   [[noreturn]] void receive_loop() {
+    mutex_connections.lock();
     while(true) {
       for(auto c : connections) {
         char buffer[1024];
@@ -65,6 +71,7 @@ public:
 
       }
     }
+    mutex_connections.unlock();
   }
 
 };
