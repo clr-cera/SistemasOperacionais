@@ -38,6 +38,8 @@ public:
 
   void accept_connection() {
     int clientSocket = accept(serverSocket, nullptr, nullptr);
+    // Como temos que checar muitas conexões, é necessário que a thread não seja bloqueada em cada checagem
+    // assim essa linha torna a socket Non Blocking
     fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 
     mutex_connections.lock();
