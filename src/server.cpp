@@ -5,6 +5,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <fcntl.h>
 #include "lib/lib.h"
 
 class Server {
@@ -37,6 +38,7 @@ public:
 
   void accept_connection() {
     int clientSocket = accept(serverSocket, nullptr, nullptr);
+    fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 
     mutex_connections.lock();
     connections.push_back(clientSocket);
@@ -60,7 +62,7 @@ public:
       mutex_connections.lock();
       for(auto c : connections) {
         char buffer[1024];
-        if (recv(c, buffer, 1024, 0) != 0) {
+        if (recv(c, buffer, 1024, 0) > 0) {
           std::cout << buffer << std::endl;
           for(auto co : connections) {
             if(c != co) {
@@ -68,7 +70,6 @@ public:
             }
           }
         }
-
       }
       mutex_connections.unlock();
     }
