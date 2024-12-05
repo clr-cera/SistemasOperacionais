@@ -31,17 +31,18 @@ public:
     // Thread que lê do usuário e envia mensagens
     [[noreturn]] void send_loop() {
         while(true) {
-            char buffer[1024];
+            char buffer[BUFFER_SIZE];
             std::cin >> buffer;
             send(clientSocket, buffer, strlen(buffer), 0);
+            clean_buffer(buffer);
         }
     }
 
     // Thread que lê mensagens e printa
     [[noreturn]] void receive_loop() {
         while(true) {
-            char buffer[1024];
-            recv(clientSocket, buffer, 1024, 0);
+            char buffer[BUFFER_SIZE];
+            recv(clientSocket, buffer, BUFFER_SIZE, 0);
             std::cout << buffer << std::endl;
         }
     }

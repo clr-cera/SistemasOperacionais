@@ -63,12 +63,13 @@ public:
     while(true) {
       mutex_connections.lock();
       for(auto c : connections) {
-        char buffer[1024];
-        if (recv(c, buffer, 1024, 0) > 0) {
+        char buffer[BUFFER_SIZE];
+        if (recv(c, buffer, BUFFER_SIZE, 0) > 0) {
           std::cout << buffer << std::endl;
           for(auto co : connections) {
             if(c != co) {
-              send(co, buffer, 1024, 0);
+              send(co, buffer, BUFFER_SIZE, 0);
+              clean_buffer(buffer);
             }
           }
         }
