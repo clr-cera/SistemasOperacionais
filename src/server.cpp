@@ -69,9 +69,9 @@ public:
           for(auto co : connections) {
             if(c != co) {
               send(co, buffer, BUFFER_SIZE, 0);
-              clean_buffer(buffer);
             }
           }
+          clean_buffer(buffer);
         }
       }
       mutex_connections.unlock();
