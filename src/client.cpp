@@ -32,7 +32,7 @@ public:
     [[noreturn]] void send_loop() {
         while(true) {
             char buffer[BUFFER_SIZE];
-            std::cin >> buffer;
+            fgets(buffer, BUFFER_SIZE, stdin);
             send(clientSocket, buffer, strlen(buffer), 0);
             clean_buffer(buffer);
         }

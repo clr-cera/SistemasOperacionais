@@ -3,7 +3,7 @@
 
     #include <netinet/in.h>
 
-    #define PORT 6969
+    #define PORT 25565
     #define IP INADDR_ANY // Como estamos rodando localmente, a constante INADDR_ANY está no servidor e cliente
 
     #define BUFFER_SIZE 1024
